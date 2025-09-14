@@ -67,17 +67,22 @@ namespace WrysersGoPro
         {
             instance = this;
             HarmonyPatches.ApplyHarmonyPatches();
+            GorillaTagger.OnPlayerSpawned(PlayerSpawned);
         }
 
         public void PlayerSpawned()
         {
             /* Code here runs after the game initializes (i.e. GorillaLocomotion.GTPlayer.Instance != null) */
             IsSteamVR = Traverse.Create(PlayFabAuthenticator.instance).Field("platform").GetValue().ToString().ToLower() == "steam";
-            MakeCamera();
         }
 
         void FixedUpdate()
         {
+            if (!initialized && GTPlayer.Instance != null && GameObject.Find("Player Objects/Third Person Camera/Shoulder Camera") != null)
+            {
+                MakeCamera();
+            }
+
             /* Code here runs every frame when the mod is enabled */
             if (initialized)
             {
@@ -87,6 +92,7 @@ namespace WrysersGoPro
                 }
                 if (hideCam)
                 {
+                    Debug.Log("All my fucking fault");
                     realgopro.SetActive(false);
                 }
                 shoulderCamera.fieldOfView = fov = Mathf.Clamp(fov, 5, 140);
